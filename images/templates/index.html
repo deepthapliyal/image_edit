@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+
+        .image-container {
+            max-width: 400px;
+            max-height: 400px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid vh-100 d-flex flex-column justify-content-center align-items-center">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="text-center">
+                    <h1 class="my-4">ImageTransmute</h1>
+                    <h2 class="my-2">Select Your File</h2>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputGroupFile02">
+                        <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                    </div>
+                    <h2 class="pt-4 pb-2">Convert To</h2>
+                    <div class="input-group mb-3">
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected>Select File Format</option>
+                            <option value="JPEG">JPEG</option>
+                            <option value="PNG">PNG</option>
+                            <option value="GRAYSCALE">Grayscale</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary mt-4" onclick="convertImage()">Convert</button>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+                <h3 class="mt-4">Preview</h3>
+                <div class="image-container">
+                    <img id="previewImage" src="" class="img-fluid rounded" alt="Preview Image" style="display: none;">
+                </div>
+                <button id="downloadButton" type="button" class="btn btn-primary mt-4"
+                    style="display: none;">Download</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        function convertImage() {
+            // Get the selected file and file format
+            const fileInput = document.getElementById('inputGroupFile02');
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Please select a file to convert.');
+                return;
+            }
+            const file = fileInput.files[0];
+
+            const fileFormatSelect = document.querySelector('.form-select');
+            const fileFormat = fileFormatSelect.value;
+            if (fileFormat === 'Select File Format') {
+                alert('Please select a valid file format.');
+                return;
+            }
+
+            // Get the CSRF token from the cookie
+            const csrfToken = getCookie('csrftoken');
+
+            // Create FormData object and append the file and file format
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('format', fileFormat);
+
+            // Create a new XMLHttpRequest object
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'convert/');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Conversion success
+                        const response = JSON.parse(xhr.responseText);
+                        const previewImage = document.getElementById('previewImage');
+                        const downloadButton = document.getElementById('downloadButton');
+
+                        // Display the converted image and download button
+                        previewImage.src = response.imageUrl;
+                        previewImage.style.display = 'block';
+                        downloadButton.style.display = 'block';
+
+                        downloadButton.addEventListener("click", function () {
+                            // Create a temporary anchor element
+                            var downloadLink = document.createElement("a");
+                            downloadLink.href = response.imageUrl;
+                            downloadLink.download = "image.jpg";
+
+                            // Trigger the click event of the anchor element to start the download
+                            downloadLink.click();
+
+                        })
+
+                    } else {
+                        // Conversion error
+                        alert('Error occurred during conversion.');
+                    }
+                }
+            };
+
+            // Set the CSRF token as a header in the request
+            xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+            // Send the form data to the backend API
+            xhr.send(formData);
+        }
+
+        // Helper function to get the value of a cookie by name
+        function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

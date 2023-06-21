@@ -1,0 +1,19 @@
+# Ignore operating system generated files
+.DS_Store
+Thumbs.db
+
+# Ignore editor files
+*.swp
+*.swo
+
+# Ignore build artifacts or generated files
+/dist
+/build
+/myenv
+/__pycache__
+
+# Ignore sensitive files containing credentials or API keys
+/secrets.txt
+/config.ini
+
+
