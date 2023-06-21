@@ -23,6 +23,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 
 # Quick-start development settings - unsuitable for production
@@ -34,7 +36,10 @@ SECRET_KEY = 'django-insecure-5%fsggy@gp8$3a7ld&%ooqf32c74ubcon=ax4$o%09#ivk-^4q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh']
+# Or * to allow all
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition

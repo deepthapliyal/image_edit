@@ -8,3 +8,5 @@ urlpatterns  = [
 ]
 
 urlpatterns += urls_media.urlpatterns
+# add at the last
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
